@@ -50,7 +50,7 @@ resource "azurerm_sql_database" "sql_server_database" {
     "azurerm_sql_firewall_rule.nolan_home",
   ]
   provisioner "local-exec" {
-    command = "mssql-scripter -U dev-loconomis -P ${var.sql_server_password} -S dev-loconomics.database.windows.net -d Dev --target-server-version AzureDB >dev.sql"
+    command = "mssql-scripter -U dev-loconomis -P ${var.sql_server_password} -S dev-loconomics.database.windows.net -d Dev --schema-and-data --target-server-version AzureDB >dev.sql"
   }
   provisioner "local-exec" {
     command = "sqlcmd -S ${azurerm_sql_server.sql_server.fully_qualified_domain_name} -U ${azurerm_sql_server.sql_server.administrator_login} -P ${azurerm_sql_server.sql_server.administrator_login_password} -d Dev -i dev.sql"
@@ -83,10 +83,7 @@ resource "azurerm_app_service" "app" {
   app_settings {
     WEBSITES_PORT = "1337"
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
-    MSSQLSERVER_USER = "${azurerm_sql_server.sql_server.administrator_login}"
-    MSSQLSERVER_PASSWORD = "${azurerm_sql_server.sql_server.administrator_login_password}"
-    MSSQLSERVER_HOST = "${azurerm_sql_server.sql_server.fully_qualified_domain_name}"
-    MSSQLSERVER_DATABASE = "Dev"
+    MSSQLSERVER_URL = "mssql://${azurerm_sql_server.sql_server.administrator_login}:${azurerm_sql_server.sql_server.administrator_login_password}@${azurerm_sql_server.sql_server.fully_qualified_domain_name}/dev?encrypt=true"
     LOCONOMICS_BACKEND_URL = "https://dev.loconomics.com"
   }
   depends_on = [
