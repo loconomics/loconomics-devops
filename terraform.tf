@@ -41,6 +41,14 @@ resource "azurerm_sql_firewall_rule" "nolan_home" {
   end_ip_address      = "71.0.0.0"
 }
 
+resource "azurerm_sql_firewall_rule" "app" {
+  name      = "app"
+  resource_group_name = "${azurerm_resource_group.app.name}"
+  server_name = "${azurerm_sql_server.sql_server.name}"
+  start_ip_address    = "13.0.0.0"
+  end_ip_address      = "14.0.0.0"
+}
+
 resource "azurerm_sql_database" "sql_server_database" {
   name      = "Dev"
   location = "${azurerm_resource_group.app.location}"
@@ -83,7 +91,7 @@ resource "azurerm_app_service" "app" {
   app_settings {
     WEBSITES_PORT = "1337"
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = "false"
-    MSSQLSERVER_URL = "mssql://${azurerm_sql_server.sql_server.administrator_login}:${azurerm_sql_server.sql_server.administrator_login_password}@${azurerm_sql_server.sql_server.fully_qualified_domain_name}/dev?encrypt=true"
+    MSSQLSERVER_URL = "mssql://${azurerm_sql_server.sql_server.administrator_login}:${azurerm_sql_server.sql_server.administrator_login_password}@${azurerm_sql_server.sql_server.fully_qualified_domain_name}:1433/dev?encrypt=true"
     LOCONOMICS_BACKEND_URL = "https://dev.loconomics.com"
   }
   depends_on = [
