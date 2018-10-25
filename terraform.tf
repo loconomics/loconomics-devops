@@ -100,4 +100,7 @@ resource "azurerm_app_service" "app" {
   depends_on = [
     "azurerm_sql_database.sql_server_database",
   ]
+  lifecycle {
+    ignore_changes = ["app_settings"]
+  }
 }
