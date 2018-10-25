@@ -63,6 +63,9 @@ resource "azurerm_sql_database" "sql_server_database" {
   provisioner "local-exec" {
     command = "sqlcmd -S ${azurerm_sql_server.sql_server.fully_qualified_domain_name} -U ${azurerm_sql_server.sql_server.administrator_login} -P ${azurerm_sql_server.sql_server.administrator_login_password} -d Dev -i dev.sql"
   }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azurerm_app_service_plan" "plan" {
